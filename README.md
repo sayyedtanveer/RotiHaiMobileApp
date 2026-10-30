@@ -372,11 +372,13 @@ These components render the UI and handle user interactions:
 | `expo` | ~57.0.25 | Cross-platform mobile framework |
 | `react-native` | 0.86.3 | Native mobile UI framework |
 | `react` | 19.2.3 | UI component library |
-| `axios` | Latest | HTTP client for API calls |
-| `@react-navigation/native` | Latest | App navigation |
+| `axios` | ^1.12.2 | HTTP client for API calls |
+| `@react-navigation/native` | ^7.1.17 | App navigation |
+| `@react-navigation/bottom-tabs` | ^7.4.7 | Partner tab navigation |
 | `expo-status-bar` | ~57.0.1 | Status bar management |
-| `expo-secure-store` | Latest | Encrypted storage |
-| `expo-notifications` | Latest | Push notifications |
+| `expo-secure-store` | ~57.0.4 | Encrypted session storage |
+| `react-native-screens` | ~4.26.0 | Native navigation screens |
+| `react-native-safe-area-context` | ~5.7.0 | Safe-area layout support |
 
 ### Dev Dependencies
 
@@ -389,61 +391,76 @@ These components render the UI and handle user interactions:
 
 ## Current Status
 
-✅ **Completed:**
-- App shell with auth gate and session restoration
-- Secure session storage with encryption
-- Centralized API client with auth interceptors
-- Partner-first navigation structure
-- WebSocket connection manager for real-time updates
-- Placeholder screens for all major features
-- TypeScript types for type-safe development
-
-⏳ **In Progress:**
-- Backend integration for login and refresh flows
-- Order management functionality
-- Real-time order notifications via WebSocket
-
-❌ **Planned:**
-- Full order details and management screens
-- Menu management UI
-- Earnings reports and analytics
-- Push notification handling
-- Payment processing integration
-- Subscription management UI
+The mobile app currently includes partner login, dashboard metrics, order actions,
+menu availability and fulfillment controls, earnings, subscription history, restaurant
+status/pre-order settings, and profile viewing. The main web partner module has
+additional workflows that are not yet present in the mobile app: profile/password
+editing, subscription delivery status updates, and subscription availability/leave
+management. Push notifications also require a server endpoint and mobile registration
+flow before they can be considered supported.
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 16+ and npm/yarn
-- Expo CLI: `npm install -g expo-cli`
-- iOS: Xcode (Mac only)
-- Android: Android Studio and SDK
+- Node.js and npm
+- An Expo account and EAS CLI access to build an installable APK
+- Android phone with network access to the RotiHai API
+- For local API testing, the phone and API host must be on the same Wi-Fi network
 
 ### Installation
 
-```bash
-# Install dependencies
+Create `.env.local` in this project and point it at a reachable RotiHai server. On a
+physical phone, use the computer's LAN IP address, not `localhost` or `127.0.0.1`.
+The WebSocket URL is derived from the API URL when it is not set separately.
+
+```powershell
+@'
+EXPO_PUBLIC_API_BASE_URL=http://192.168.1.25:5000
+# Optional if WebSockets use a different host:
+# EXPO_PUBLIC_WS_BASE_URL=ws://192.168.1.25:5000
+'@ | Set-Content .env.local
 npm install
-
-# Start the app
 npm start
-
-# Run on specific platform
-npm run ios      # iOS simulator
-npm run android  # Android emulator
-npm run web      # Web browser
 ```
 
-### Build
+Allow the API port through the computer's firewall and ensure the server listens on an
+interface reachable from the phone. Expo's tunnel only serves the development bundle;
+it does not expose the API server. For a production build, use an HTTPS API endpoint.
 
-```bash
-# Preview build
-expo preview
+### Build and install an Android APK
 
-# Create production build
-eas build
+1. Install project dependencies, sign in to EAS with `npx eas-cli login`, then run
+   `npx eas-cli build:configure` once for this Expo project.
+2. In the Expo project's EAS `preview` environment settings, define
+   `EXPO_PUBLIC_API_BASE_URL` for the `preview` environment. Set
+   `EXPO_PUBLIC_WS_BASE_URL` there only if it differs from the API host.
+3. Build the internal-test APK:
+
+   ```powershell
+   npm run build:android:apk
+   ```
+
+4. When the build completes, download the APK from the EAS build page and transfer it
+   to the phone. Open the APK and allow installation from that source if Android asks.
+5. Open **RotiHai Partner**, sign in with a partner account, and exercise the checklist
+   below. The `preview` build permits cleartext HTTP for local-network testing; the
+   `production` profile disables it and should use HTTPS/WSS.
+
+For local development without an APK, run `npm start`, scan the QR code with Expo Go,
+and keep the phone and development computer on the same network.
+
+### On-device smoke test
+
+- Login succeeds and a relaunch restores the session.
+- Home metrics, orders, menu, earnings, and subscriptions load from the intended API.
+- Accept/reject an eligible test order and mark an accepted order prepared.
+- Change a test product's availability/fulfillment mode and confirm the change in the
+  main partner module.
+- Change restaurant status and next-day pre-order opening time, then confirm the values
+  in the main partner module.
+- Pull to refresh, check behavior on Wi-Fi/mobile data changes, and log out.
 ```
 
 ---
@@ -485,11 +502,12 @@ unsubscribe();
 
 ## Environment Variables
 
-Create a `.env.local` file:
+Set these in `.env.local` for local runs or in the EAS `preview`/`production`
+environment for cloud builds:
 
 ```
-REACT_APP_API_BASE_URL=https://api.rotihaidev.com
-REACT_APP_WS_BASE_URL=wss://ws.rotihaidev.com
+EXPO_PUBLIC_API_BASE_URL=https://your-api-host
+EXPO_PUBLIC_WS_BASE_URL=wss://your-api-host
 ```
 
 ---

@@ -47,6 +47,7 @@ export class PartnerWebSocketManager {
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) return;
 
     const baseUrl = ENV.WS_BASE_URL.replace(/\/$/, '');
+    if (!baseUrl) return;
     const url = `${baseUrl}/ws?type=chef&token=${encodeURIComponent(this.token)}`;
     this.socket = new WebSocket(url);
 

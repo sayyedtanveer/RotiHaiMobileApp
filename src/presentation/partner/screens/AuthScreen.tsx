@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 
 import { AuthManager } from '../../../core/auth/AuthManager';
+import { ENV } from '../../../core/config/env';
 
 type Props = {
   onAuthenticated: () => void;
@@ -13,6 +14,11 @@ export function AuthScreen({ onAuthenticated }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!ENV.API_BASE_URL) {
+      Alert.alert('App not configured', 'Set EXPO_PUBLIC_API_BASE_URL to your RotiHai server address before signing in.');
+      return;
+    }
+
     if (!username.trim() || !password.trim()) {
       Alert.alert('Missing details', 'Enter username and password.');
       return;
@@ -34,6 +40,11 @@ export function AuthScreen({ onAuthenticated }: Props) {
     <View style={styles.container}>
       <Text style={styles.title}>RotiHai Partner</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
+      {!ENV.API_BASE_URL ? (
+        <Text style={styles.configurationWarning}>
+          Server address not configured. Set EXPO_PUBLIC_API_BASE_URL before building the app.
+        </Text>
+      ) : null}
 
       <TextInput
         value={username}
@@ -75,6 +86,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#5f5f5f',
     marginBottom: 24,
+  },
+  configurationWarning: {
+    color: '#b42318',
+    fontSize: 14,
+    marginBottom: 16,
   },
   input: {
     backgroundColor: '#ffffff',
