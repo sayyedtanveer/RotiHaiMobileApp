@@ -433,9 +433,9 @@ it does not expose the API server. For a production build, use an HTTPS API endp
 
 1. Install project dependencies, sign in to EAS with `npx eas-cli login`, then run
    `npx eas-cli build:configure` once for this Expo project.
-2. In the Expo project's EAS `preview` environment settings, define
-   `EXPO_PUBLIC_API_BASE_URL` for the `preview` environment. Set
-   `EXPO_PUBLIC_WS_BASE_URL` there only if it differs from the API host.
+2. The `preview` and `production` profiles in `eas.json` use the production API host.
+   Set `EXPO_PUBLIC_WS_BASE_URL` in the matching EAS environment only if the WebSocket
+   host differs from the API host.
 3. Build the internal-test APK:
 
    ```powershell

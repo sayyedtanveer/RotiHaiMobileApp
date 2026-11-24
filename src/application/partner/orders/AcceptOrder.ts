@@ -1,4 +1,4 @@
-import { partnerApi } from '../../core/api/partnerApi';
+import { partnerApi } from '../../../core/api/partnerApi';
 
 export class AcceptOrder {
   static async execute(orderId: string) {

@@ -5,7 +5,8 @@
       "environment": "preview",
       "env": {
         "APP_ENV": "development",
-        "EXPO_PUBLIC_APP_ENV": "development"
+        "EXPO_PUBLIC_APP_ENV": "development",
+        "EXPO_PUBLIC_API_BASE_URL": "https://rotihai-main-bcht.onrender.com"
       },
       "android": {
         "buildType": "apk"
@@ -15,7 +16,8 @@
       "environment": "production",
       "env": {
         "APP_ENV": "production",
-        "EXPO_PUBLIC_APP_ENV": "production"
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_BASE_URL": "https://rotihai-main-bcht.onrender.com"
       },
       "android": {
         "buildType": "app-bundle"
